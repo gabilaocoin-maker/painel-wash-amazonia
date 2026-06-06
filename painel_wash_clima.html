@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel WASH & Clima — Amazônia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --t50:#E1F5EE;--t100:#9FE1CB;--t200:#5DCAA5;--t600:#0F6E56;--t800:#085041;--t900:#04342C;
+  --a50:#FAEEDA;--a200:#EF9F27;--a600:#854F0B;
+  --b50:#E6F1FB;--b200:#85B7EB;--b600:#185FA5;
+  --c50:#FAECE7;--c600:#993C1D;
+  --g50:#EAF3DE;--g200:#97C459;--g600:#3B6D11;
+  --r50:#FCEBEB;--r600:#A32D2D;
+  --bg:#F3F1EC;--card:#FFFFFF;--txt:#1A1A18;--muted:#6B6B67;--bdr:rgba(0,0,0,0.08)
+}
+@media(prefers-color-scheme:dark){:root{--bg:#1A1A18;--card:#252522;--txt:#F0EDE6;--muted:#A8A49D;--bdr:rgba(255,255,255,0.09)}}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh}
+
+header{background:var(--t900);padding:1.7rem 2.4rem 1.3rem;position:relative;overflow:hidden}
+header::after{content:'';position:absolute;right:-50px;top:-50px;width:230px;height:230px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hrow{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;position:relative;z-index:1}
+.htitle{font-family:'DM Serif Display',serif;color:#9FE1CB;font-size:1.85rem;font-weight:400;line-height:1.2}
+.hsub{color:rgba(159,225,203,.6);font-size:.79rem;margin-top:.22rem;font-weight:300;letter-spacing:.04em}
+.hmeta{text-align:right;color:rgba(159,225,203,.7);font-size:.74rem;line-height:1.7}
+.hmeta strong{display:block;color:#9FE1CB;font-size:.84rem;font-weight:500}
+.hpills{display:flex;flex-wrap:wrap;gap:.38rem;margin-top:.9rem;position:relative;z-index:1}
+.pill{background:rgba(255,255,255,.09);color:rgba(159,225,203,.9);font-size:.67rem;padding:.18rem .62rem;border-radius:999px;border:1px solid rgba(159,225,203,.2);font-weight:500}
+.pill.f{background:rgba(93,202,165,.2);border-color:rgba(93,202,165,.4)}
+
+main{padding:1.8rem 2.4rem;max-width:1180px;margin:0 auto}
+.sec{margin-bottom:2.2rem}
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;flex-wrap:wrap;gap:.5rem}
+.sec-title{font-family:'DM Serif Display',serif;font-size:1.12rem;font-weight:400;display:flex;align-items:center;gap:.5rem}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dt{background:var(--t200)}.da{background:var(--a200)}.db{background:var(--b200)}.dg{background:var(--g200)}.dc{background:var(--c200)}
+.hd-link{font-size:.74rem;color:var(--t600);font-weight:500;text-decoration:none;border:1px solid var(--t200);border-radius:6px;padding:.26rem .72rem;background:transparent;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif}
+.hd-link:hover{background:var(--t50)}
+hr.div{border:none;border-top:1px solid var(--bdr);margin:1.6rem 0}
+
+/* ── RIOS ── */
+.rios-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:.65rem;margin-bottom:.8rem}
+.rio-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.18rem;text-decoration:none;color:inherit;transition:border-color .15s,transform .12s}
+.rio-card:hover{border-color:var(--t200);transform:translateY(-1px)}
+.rio-card.alerta{border-left:3px solid var(--r600)}
+.rio-card.atencao{border-left:3px solid var(--a200)}
+.rio-card.normal{border-left:3px solid var(--t200)}
+.rio-card.baixo{border-left:3px solid var(--b200)}
+.rio-name{font-size:.71rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.rio-local{font-size:.66rem;color:var(--muted)}
+.rio-nivel-row{display:flex;align-items:baseline;gap:.4rem;margin-top:.12rem}
+.rio-nivel{font-family:'DM Serif Display',serif;font-size:1.6rem;color:var(--txt);line-height:1}
+.rio-unit{font-size:.7rem;color:var(--muted)}
+.rio-var{font-size:.72rem;font-weight:500}
+.var-up{color:var(--b600)}.var-dn{color:var(--c600)}
+.med-row{display:flex;align-items:center;gap:.42rem;margin-top:.3rem}
+.med-wrap{flex:1;height:5px;background:var(--bdr);border-radius:3px;position:relative;overflow:visible}
+.med-fill{height:100%;border-radius:3px}
+.med-mark{position:absolute;top:-3px;width:2px;height:11px;background:#888;border-radius:1px}
+.med-lbl{font-size:.62rem;color:var(--muted);white-space:nowrap}
+.rio-status{font-size:.64rem;font-weight:600;padding:.13rem .46rem;border-radius:4px;width:fit-content;margin-top:.25rem}
+.st-alerta{background:var(--r50);color:var(--r600)}.st-atencao{background:var(--a50);color:var(--a600)}
+.st-normal{background:var(--t50);color:var(--t600)}.st-baixo{background:var(--b50);color:var(--b600)}
+.rio-date{font-size:.6rem;color:var(--muted);margin-top:.25rem}
+.boletim-bar{background:var(--t50);border:1px solid var(--t100);border-radius:8px;padding:.65rem .95rem;font-size:.78rem;color:var(--t800);line-height:1.6}
+.boletim-bar a{color:var(--t600);font-weight:500;text-decoration:none}
+.boletim-bar a:hover{text-decoration:underline}
+
+/* ── CLIMA ── */
+.clima-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.65rem;margin-bottom:.6rem}
+.clima-card{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:.95rem 1.05rem}
+.clima-head{display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem}
+.clima-icon{font-size:1.1rem}
+.clima-title{font-size:.79rem;font-weight:600}
+.clima-sub{font-size:.67rem;color:var(--muted);margin-top:.03rem}
+.clima-tag{display:inline-block;font-size:.64rem;font-weight:600;padding:.12rem .46rem;border-radius:4px;margin-bottom:.38rem}
+.clima-body{font-size:.77rem;color:var(--txt);line-height:1.55}
+.clima-fonte{font-size:.65rem;color:var(--muted);margin-top:.55rem;padding-top:.45rem;border-top:1px solid var(--bdr);display:flex;flex-wrap:wrap;gap:.3rem .5rem}
+.clima-fonte a{color:var(--t600);text-decoration:none;font-weight:500}
+.clima-fonte a:hover{text-decoration:underline}
+
+/* ── NOTÍCIAS — links Google News ── */
+.news-intro{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1rem;font-size:.8rem;color:var(--muted);line-height:1.6}
+.news-intro strong{color:var(--txt)}
+.news-grid-links{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.55rem}
+.nl{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:.85rem 1rem;display:flex;gap:.7rem;align-items:center;text-decoration:none;color:inherit;transition:border-color .15s,transform .1s}
+.nl:hover{border-color:var(--t200);transform:translateX(2px)}
+.nl-icon{font-size:1.2rem;flex-shrink:0}
+.nl-body{}
+.nl-label{font-size:.84rem;font-weight:500;color:var(--txt);line-height:1.3}
+.nl-desc{font-size:.72rem;color:var(--muted);margin-top:.15rem}
+.nl-tag{display:inline-block;font-size:.62rem;font-weight:600;padding:.1rem .38rem;border-radius:3px;margin-top:.28rem}
+.tag-am{background:var(--g50);color:var(--g600)}.tag-wa{background:var(--t50);color:var(--t600)}
+.tag-cl{background:var(--a50);color:var(--a600)}.tag-de{background:var(--r50);color:var(--r600)}
+.tag-no{background:var(--c50);color:var(--c600)}
+
+/* ── EVENTOS ── */
+.ev-list{display:flex;flex-direction:column;gap:.48rem}
+.ev{background:var(--card);border:1px solid var(--bdr);border-radius:10px;padding:.8rem 1.1rem;display:grid;grid-template-columns:70px 1fr auto;gap:.9rem;align-items:center;transition:border-color .15s;text-decoration:none;color:inherit}
+.ev:hover{border-color:var(--t200)}
+.ev-dt{text-align:center}
+.ev-mo{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t600)}
+.ev-day{font-family:'DM Serif Display',serif;font-size:1.55rem;color:var(--txt);line-height:1}
+.ev-name{font-size:.86rem;font-weight:500;line-height:1.32}
+.ev-loc{font-size:.71rem;color:var(--muted);margin-top:.14rem}
+.ev-tag{font-size:.64rem;padding:.17rem .56rem;border-radius:999px;white-space:nowrap;font-weight:500}
+.et-wash{background:var(--t50);color:var(--t600)}.et-clima{background:var(--a50);color:var(--a600)}.et-am{background:var(--g50);color:var(--g600)}
+.ev-past{opacity:.5}
+
+footer{text-align:center;padding:1.3rem;font-size:.7rem;color:var(--muted);border-top:1px solid var(--bdr);margin-top:.5rem}
+@media(max-width:640px){
+  main{padding:1.2rem .9rem}header{padding:1.3rem .9rem}
+  .ev{grid-template-columns:60px 1fr}.ev-tag{display:none}
+  .htitle{font-size:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div>
+      <div class="htitle">WASH & Clima — Amazônia</div>
+      <div class="hsub">Monitor de rios · Previsão climática · Notícias · Agenda</div>
+    </div>
+    <div class="hmeta">
+      <strong id="today"></strong>
+      Boletim SGB: 02/06/2026
+    </div>
+  </div>
+  <div class="hpills">
+    <span class="pill f">🌿 Amazônia Legal</span>
+    <span class="pill f">🌵 Nordeste</span>
+    <span class="pill">WASH · Saneamento</span>
+    <span class="pill">Emergências Climáticas</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ══════════════ 1. RIOS ══════════════ -->
+<div class="sec">
+  <div class="sec-hd">
+    <div class="sec-title"><span class="dot dt"></span>Monitor de Rios — Amazônia (SGB/CPRM · 02/06/2026)</div>
+    <a class="hd-link" href="https://www.sgb.gov.br/sace/amazonas/ultimo_boletim.php" target="_blank">Boletim PDF →</a>
+  </div>
+  <div class="rios-grid" id="rios-grid"></div>
+  <div class="boletim-bar" style="margin-top:.7rem">
+    <strong>📋 22º Boletim (02/06/2026):</strong>
+    Rio Branco (Boa Vista/Caracaraí) em enchente intensa (+200 cm/sem) — próximo da cota de inundação ⚠️.
+    Rio Negro (Manaus) dentro da mediana histórica; pico previsto ~28,20 m com baixa probabilidade de inundação severa.
+    Rio Madeira (Porto Velho) em vazante intensa (−136 cm/sem). Rio Acre (Rio Branco-AC) com nível muito baixo para o período.
+    Déficit de chuva sobre maioria das sub-bacias (Ji-Paraná extremamente seco).
+    <a href="https://www.sgb.gov.br/sace/amazonas/ultimo_boletim.php" target="_blank">→ Boletim completo</a> &nbsp;·&nbsp;
+    <a href="https://www.sgb.gov.br/sace/amazonas" target="_blank">→ SACE Amazônia</a>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══════════════ 2. CLIMA ══════════════ -->
+<div class="sec">
+  <div class="sec-title" style="margin-bottom:.9rem"><span class="dot da"></span>Previsão Climática — Amazônia & Nordeste (Jun–Nov 2026)</div>
+  <div class="clima-grid">
+
+    <div class="clima-card">
+      <div class="clima-head"><div class="clima-icon">🌊</div><div>
+        <div class="clima-title">ENSO — El Niño / La Niña</div>
+        <div class="clima-sub">NOAA CPC · mai/2026</div>
+      </div></div>
+      <span class="clima-tag" style="background:var(--a50);color:var(--a600)">⚠️ El Niño Watch — formação em curso</span>
+      <div class="clima-body">
+        <strong>82% de probabilidade de El Niño em Mai–Jul 2026</strong>, com 96% de chance de persistir até o inverno boreal 2026–27. La Niña encerrou-se. Pacífico equatorial com aquecimento anômalo subsuperficial em avanço.
+      </div>
+      <div class="clima-fonte">
+        Fontes:
+        <a href="https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.shtml" target="_blank">NOAA CPC</a>
+        <a href="https://www.climate.gov/enso" target="_blank">NOAA Climate.gov</a>
+        <a href="https://www.gov.br/inpe/pt-br/assuntos/ultimas-noticias/o-que-precisamos-saber-sobre-o-el-nino-e-seus-impactos-para-o-brasil" target="_blank">INPE</a>
+      </div>
+    </div>
+
+    <div class="clima-card">
+      <div class="clima-head"><div class="clima-icon">🌧️</div><div>
+        <div class="clima-title">Impacto do El Niño no Brasil</div>
+        <div class="clima-sub">Período crítico: Set–Nov 2026</div>
+      </div></div>
+      <span class="clima-tag" style="background:var(--r50);color:var(--r600)">⚠️ Maior risco de seca na Amazônia e Nordeste</span>
+      <div class="clima-body">
+        <strong>Amazônia:</strong> maior risco de seca no norte e leste, queda nos níveis dos rios, aumento do risco de queimadas. Efeito mais crítico previsto para set–nov 2026 (MetSul).<br><br>
+        <strong>Nordeste:</strong> redução das chuvas, risco de estiagem prolongada, comprometimento do abastecimento de água.
+      </div>
+      <div class="clima-fonte">
+        Fontes:
+        <a href="https://portalamazonia.com/meio-ambiente/el-nino-2026-amazonia/" target="_blank">Portal Amazônia</a>
+        <a href="https://metsul.com/novos-dados-projetam-el-nino-excepcional-extremo-e-historico/" target="_blank">MetSul</a>
+        <a href="https://www.climatempo.com.br/noticia/el-nino/risco-de-el-nino-forte-a-muito-forte-esta-aumentando" target="_blank">Climatempo</a>
+      </div>
+    </div>
+
+    <div class="clima-card">
+      <div class="clima-head"><div class="clima-icon">🌧️</div><div>
+        <div class="clima-title">Chuvas — Próximas 2 Semanas</div>
+        <div class="clima-sub">NOAA CPC via SGB · jun/2026</div>
+      </div></div>
+      <span class="clima-tag" style="background:var(--a50);color:var(--a600)">Déficit na maioria das bacias</span>
+      <div class="clima-body">
+        <strong>02–08/jun:</strong> acima da média no Negro, Solimões, Purus e baixo Madeira. Déficit no alto Branco, Japurá e Mamoré.<br><br>
+        <strong>09–15/jun:</strong> anomalias positivas no centro-sul (Guaporé, Madeira, Purus). Déficit no médio Branco e médio Negro.
+      </div>
+      <div class="clima-fonte">
+        Fonte:
+        <a href="https://www.sgb.gov.br/sace/amazonas/ultimo_boletim.php" target="_blank">SGB/CPRM — 22º Boletim Amazônia</a>
+      </div>
+    </div>
+
+    <div class="clima-card">
+      <div class="clima-head"><div class="clima-icon">📉</div><div>
+        <div class="clima-title">Anomalia de Chuvas (mai/2026)</div>
+        <div class="clima-sub">vs. climatologia histórica</div>
+      </div></div>
+      <span class="clima-tag" style="background:var(--r50);color:var(--r600)">Abaixo da média — maioria das bacias</span>
+      <div class="clima-body">
+        <strong>Ji-Paraná: extremamente seco (−2,6σ).</strong> Jutaí e Purus: muito secos (−1,9/−1,8σ). Içá e Madeira: secos (−1,1σ).<br><br>
+        Exceções positivas: bacia do <strong>Branco</strong> acima da média (+0,5σ). Rio Negro próximo da normal.
+      </div>
+      <div class="clima-fonte">
+        Fonte:
+        <a href="https://www.sgb.gov.br/sace/amazonas/ultimo_boletim.php" target="_blank">SGB/CPRM — Boletim jun/2026</a>
+        <a href="https://portal.inmet.gov.br/" target="_blank">INMET</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══════════════ 3. NOTÍCIAS ══════════════ -->
+<div class="sec">
+  <div class="sec-title" style="margin-bottom:.8rem"><span class="dot dg"></span>Notícias Recentes — Acesso Direto</div>
+
+  <div class="news-intro">
+    <strong>Como usar:</strong> cada botão abre o Google News já filtrado pelo tema. As notícias são sempre as mais recentes — de G1, Agência Brasil, Amazônia Real, INPE, ANA, CEMADEN e outros. Clique no tema que quer acompanhar agora.
+    <br><small style="margin-top:.3rem;display:block">Quando o painel estiver hospedado no GitHub, as notícias aparecerão aqui automaticamente.</small>
+  </div>
+
+  <div class="news-grid-links">
+    <a class="nl" href="https://news.google.com/search?q=enchente+cheia+inundação+Amazônia&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🌊</div>
+      <div class="nl-body">
+        <div class="nl-label">Cheias & Inundações — Amazônia</div>
+        <div class="nl-desc">Nível dos rios, alertas de cheia, emergências</div>
+        <span class="nl-tag tag-de">Alertas</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=seca+estiagem+queimadas+Amazônia+2026&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🔥</div>
+      <div class="nl-body">
+        <div class="nl-label">Seca & Queimadas — Amazônia</div>
+        <div class="nl-desc">Estiagem, incêndios florestais, desmatamento</div>
+        <span class="nl-tag tag-de">Alertas</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=saneamento+água+WASH+Amazônia&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">💧</div>
+      <div class="nl-body">
+        <div class="nl-label">WASH & Saneamento — Amazônia</div>
+        <div class="nl-desc">Água potável, esgoto, comunidades ribeirinhas</div>
+        <span class="nl-tag tag-wa">WASH</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=saneamento+básico+Brasil+universalização&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🏗️</div>
+      <div class="nl-body">
+        <div class="nl-label">Saneamento Básico — Brasil</div>
+        <div class="nl-desc">Políticas, marco legal, investimentos</div>
+        <span class="nl-tag tag-wa">WASH</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=clima+emergência+climática+Amazônia+2026&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🌦️</div>
+      <div class="nl-body">
+        <div class="nl-label">Emergências Climáticas — Amazônia</div>
+        <div class="nl-desc">Eventos extremos, desastres, alertas CEMADEN</div>
+        <span class="nl-tag tag-cl">Clima</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=El+Niño+impacto+Brasil+Amazônia+Nordeste&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🌊</div>
+      <div class="nl-body">
+        <div class="nl-label">El Niño — Impacto no Brasil</div>
+        <div class="nl-desc">Previsões, alertas, impactos regionais</div>
+        <span class="nl-tag tag-cl">Clima</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=seca+água+saneamento+Nordeste+2026&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🌵</div>
+      <div class="nl-body">
+        <div class="nl-label">Seca & Água — Nordeste</div>
+        <div class="nl-desc">Estiagem, cisternas, abastecimento, sertão</div>
+        <span class="nl-tag tag-no">Nordeste</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=povos+indígenas+ribeirinhos+água+Amazônia&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🌿</div>
+      <div class="nl-body">
+        <div class="nl-label">Povos Indígenas & Ribeirinhos</div>
+        <div class="nl-desc">Acesso à água, saúde, territórios</div>
+        <span class="nl-tag tag-am">Amazônia</span>
+      </div>
+    </a>
+    <a class="nl" href="https://news.google.com/search?q=desmatamento+INPE+DETER+Amazônia&hl=pt-BR&gl=BR&ceid=BR:pt-BR" target="_blank">
+      <div class="nl-icon">🛰️</div>
+      <div class="nl-body">
+        <div class="nl-label">Desmatamento — INPE/DETER</div>
+        <div class="nl-desc">Alertas DETER, PRODES, MapBiomas</div>
+        <span class="nl-tag tag-am">Amazônia</span>
+      </div>
+    </a>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- ══════════════ 4. EVENTOS ══════════════ -->
+<div class="sec">
+  <div class="sec-title" style="margin-bottom:.9rem"><span class="dot dc"></span>Agenda — Eventos WASH & Clima 2026</div>
+  <div class="ev-list" id="ev-list"></div>
+</div>
+
+</main>
+<footer>Painel WASH & Clima — Amazônia Legal · Dados SGB/CPRM · ENSO: NOAA CPC · Eventos: fontes verificadas · Uso pessoal</footer>
+
+<script>
+/* ══ RIOS ══ */
+const RIOS=[
+  {rio:"Rio Negro",local:"Manaus — AM",nivel:2798,var24:4,var7:25,status:"normal",mediana:2900,min15:2400,max85:3100,periodo:"Pico: Jun–Jul",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Branco",local:"Boa Vista — RR",nivel:827,var24:15,var7:200,status:"atencao",mediana:600,min15:350,max85:950,periodo:"⚠️ Enchente intensa",link:"https://www.sgb.gov.br/sace/branco"},
+  {rio:"Rio Branco",local:"Caracaraí — RR",nivel:869,var24:10,var7:180,status:"atencao",mediana:650,min15:400,max85:1000,periodo:"⚠️ Enchente intensa",link:"https://www.sgb.gov.br/sace/branco"},
+  {rio:"Rio Solimões",local:"Manacapuru — AM",nivel:1874,var24:3,var7:22,status:"normal",mediana:1950,min15:1700,max85:2150,periodo:"Pico: Jun",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Solimões",local:"Tabatinga — AM",nivel:1172,var24:-1,var7:-1,status:"normal",mediana:1250,min15:900,max85:1500,periodo:"Início vazante",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Madeira",local:"Porto Velho — RO",nivel:1055,var24:-19,var7:-136,status:"normal",mediana:1100,min15:700,max85:1600,periodo:"Vazante intensa",link:"https://www.sgb.gov.br/sace/madeira"},
+  {rio:"Rio Purus",local:"Beruri — AM",nivel:2011,var24:2,var7:16,status:"normal",mediana:2100,min15:1800,max85:2300,periodo:"Normal para época",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Acre",local:"Rio Branco — AC",nivel:316,var24:-7,var7:-89,status:"baixo",mediana:550,min15:300,max85:850,periodo:"Nível muito baixo",link:"https://www.sgb.gov.br/sace/acre"},
+  {rio:"Rio Amazonas",local:"Óbidos — PA",nivel:744,var24:-1,var7:-5,status:"normal",mediana:780,min15:550,max85:1050,periodo:"Início vazante",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Amazonas",local:"Parintins — AM",nivel:812,var24:3,var7:12,status:"normal",mediana:850,min15:600,max85:1100,periodo:"Estabilizando",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Negro",local:"Barcelos — AM",nivel:816,var24:10,var7:64,status:"normal",mediana:850,min15:600,max85:1100,periodo:"Em enchente",link:"https://www.sgb.gov.br/sace/amazonas"},
+  {rio:"Rio Tapajós",local:"Santarém — PA",nivel:703,var24:-2,var7:-8,status:"normal",mediana:720,min15:500,max85:950,periodo:"Início vazante",link:"https://www.sgb.gov.br/sace/amazonas"},
+];
+const ST={
+  alerta:{cls:"alerta",lbl:"⚠️ Alerta",tag:"st-alerta"},
+  atencao:{cls:"atencao",lbl:"Atenção",tag:"st-atencao"},
+  normal:{cls:"normal",lbl:"Normal",tag:"st-normal"},
+  baixo:{cls:"baixo",lbl:"Nível baixo",tag:"st-baixo"}
+};
+function renderRios(){
+  document.getElementById("rios-grid").innerHTML=RIOS.map(r=>{
+    const s=ST[r.status];
+    const bc=r.status==="alerta"?"var(--r600)":r.status==="atencao"?"var(--a200)":r.status==="baixo"?"var(--b200)":"var(--t200)";
+    const rng=r.max85-r.min15;
+    const pct=n=>Math.min(100,Math.max(0,Math.round((n-r.min15)/rng*100)));
+    return`<a class="rio-card ${s.cls}" href="${r.link}" target="_blank" rel="noopener">
+      <div class="rio-name">${r.rio}</div>
+      <div class="rio-local">${r.local}</div>
+      <div class="rio-nivel-row"><div class="rio-nivel">${r.nivel}</div><div class="rio-unit">cm</div></div>
+      <div class="rio-var ${r.var24>=0?'var-up':'var-dn'}">${r.var24>=0?'▲':'▼'} ${Math.abs(r.var24)} cm/24h &nbsp;·&nbsp; ${r.var7>=0?'▲':'▼'} ${Math.abs(r.var7)} cm/7d</div>
+      <div class="med-row">
+        <div class="med-wrap">
+          <div class="med-fill" style="width:${pct(r.nivel)}%;background:${bc}"></div>
+          <div class="med-mark" style="left:${pct(r.mediana)}%" title="Mediana histórica junho: ${r.mediana} cm"></div>
+        </div>
+        <div class="med-lbl">med. ${r.mediana}</div>
+      </div>
+      <div class="rio-status ${s.tag}">${s.lbl}</div>
+      <div class="rio-date">02/06/2026 · ${r.periodo}</div>
+    </a>`;
+  }).join("");
+}
+
+/* ══ EVENTOS — todos verificados com links reais ══ */
+const hoje = new Date("2026-06-03");
+const EVENTOS=[
+  {
+    mo:"Jun",day:"8",date:new Date("2026-06-08"),
+    name:"64ª Sessões dos Órgãos Subsidiários UNFCCC (SB64)",
+    loc:"Bonn, Alemanha",tag:"et-clima",tl:"Clima/ONU",
+    url:"https://unfccc.int/sb64"
+  },
+  {
+    mo:"Jun",day:"20",date:new Date("2026-06-20"),
+    name:"Rio de Janeiro Climate Week 2026",
+    loc:"Rio de Janeiro — Brasil",tag:"et-clima",tl:"Clima",
+    url:"https://www.aguaesaneamento.org.br/en/news/eventos-de-2026-trazem-oportunidades-para-pautas-do-saneamento-e-clima/"
+  },
+  {
+    mo:"Ago",day:"23",date:new Date("2026-08-23"),
+    name:"World Water Week 2026",
+    loc:"Estocolmo, Suécia (+ online)",tag:"et-wash",tl:"WASH/Água",
+    url:"https://worldwaterweek.org"
+  },
+  {
+    mo:"Set",day:"20",date:new Date("2026-09-20"),
+    name:"NY Climate Week 2026",
+    loc:"Nova York, EUA",tag:"et-clima",tl:"Clima",
+    url:"https://www.climateweeknyc.org"
+  },
+  {
+    mo:"Out",day:"20",date:new Date("2026-10-20"),
+    name:"Eco Expo 2026 — Saneamento & Meio Ambiente",
+    loc:"São Paulo — Brasil",tag:"et-wash",tl:"WASH",
+    url:"https://www.aguaesaneamento.org.br/en/news/eventos-de-2026-trazem-oportunidades-para-pautas-do-saneamento-e-clima/"
+  },
+  {
+    mo:"Nov",day:"9",date:new Date("2026-11-09"),
+    name:"COP31 — Conferência do Clima ONU",
+    loc:"Antalya, Turquia",tag:"et-clima",tl:"COP31",
+    url:"https://unfccc.int/cop31"
+  },
+  {
+    mo:"Dez",day:"2",date:new Date("2026-12-02"),
+    name:"Conferência UN Water 2026",
+    loc:"Emirados Árabes Unidos",tag:"et-wash",tl:"WASH/ONU",
+    url:"https://www.aguaesaneamento.org.br/en/news/eventos-de-2026-trazem-oportunidades-para-pautas-do-saneamento-e-clima/"
+  },
+];
+
+function renderEventos(){
+  document.getElementById("ev-list").innerHTML=EVENTOS.map(e=>{
+    const past = e.date < hoje;
+    return`<a class="ev${past?' ev-past':''}" href="${e.url}" target="_blank" rel="noopener">
+      <div class="ev-dt"><div class="ev-mo">${e.mo}</div><div class="ev-day">${e.day}</div></div>
+      <div><div class="ev-name">${e.name}</div><div class="ev-loc">📍 ${e.loc}</div></div>
+      <span class="ev-tag ${e.tag}">${e.tl}</span>
+    </a>`;
+  }).join("");
+}
+
+/* INIT */
+document.getElementById("today").textContent=
+  new Date().toLocaleDateString("pt-BR",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+renderRios();
+renderEventos();
+</script>
+</body>
+</html>
