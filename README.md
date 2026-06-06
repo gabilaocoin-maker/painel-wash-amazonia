@@ -1,0 +1,1 @@
+# painel-wash-amazonia
